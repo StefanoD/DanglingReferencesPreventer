@@ -50,8 +50,8 @@ def main():
                 match = implicit_ref_capture_found(line)
 
                 if match:
-                    print(f"""Error in file {file}:{line_number}: implicit reference capture 
-                    is used in lambda expression:\n{line}""")
+                    print(f"Error in file {file}:{line_number}: implicit reference capture " 
+                           f"is used in lambda expression:\n{line}")
                     success = 1
 
     sys.exit(success)
