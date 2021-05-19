@@ -20,7 +20,7 @@ This check gets installed as a git hook, which is nothing else than a git plugin
 ~$ git add my_code.cpp
 ~$ git commit -am "test"
 Error in file my_code.cpp:52: implicit reference capture is used in lambda expression:
-std::async(std::launch::async, [&](){
+return std::async(std::launch::async, [&](){
 ```
 
 It is therefore better to *explicitly* write the intention of the developer:
