@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+"""
+@author: Stefano Di Martino, Miltenyi Imaging GmbH Radolfzell
+"""
+
+import subprocess
+import sys
+import re
+import os
+
+# Checks for implicit reference captures in lambda like [&]
+# For testing the regulare expression, go to https://regex101.com/
+regex_implicit_ref_capture = re.compile(r"\[([^\],]*,)*\s*&\s*[\],]")
+
+def get_changed_files():
+    # this is the magic:
+    # retrieve all files in staging area that are added, modified or renamed
+    # but no deletions etc
+
+    files = subprocess.getoutput('git diff-index --name-only --cached --diff-filter=ACMR HEAD -- ').split('\n')
+
+    return files
+
+
+def implicit_ref_capture_found(string):
+    match = re.search(regex_implicit_ref_capture, string)
+
+    if match:
+        return match.group()
+    
+    return None
+        
+
+def main():
+    files = get_changed_files()
+    success = 0
+
+    repo_root_dir = subprocess.getoutput("git rev-parse --show-toplevel")
+
+    for file in files:
+        if not file.endswith('.h') and not file.endswith('.cpp'):
+            continue
+
+        path = os.path.join(repo_root_dir, file)
+
+        with open(path) as f:
+            
+            for line_number, line in enumerate(f, start=1):
+                match = implicit_ref_capture_found(line)
+
+                if match:
+                    print(f"""Error in file {file}:{line_number}: implicit reference capture 
+                    is used in lambda expression:\n{line}""")
+                    success = 1
+
+    sys.exit(success)
+
+
+if __name__ == '__main__':
+    main()
