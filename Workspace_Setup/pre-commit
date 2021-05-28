@@ -50,9 +50,7 @@ def main():
         with open(path) as f:
             
             for line_number, line in enumerate(f, start=1):
-                match = implicit_ref_capture_found(line)
-
-                if match:
+                if implicit_ref_capture_found(line):
                     print(f"Error in file {file}:{line_number}: implicit reference capture " 
                            f"is used in lambda expression:\n{line}")
                     success = 1
